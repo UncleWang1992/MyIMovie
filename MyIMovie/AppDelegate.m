@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "BaseViewController.h"
 @interface AppDelegate ()
 
 @end
@@ -16,8 +16,41 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self createTabbarViewController];
+    [self.window makeKeyAndVisible];
+    
     return YES;
+}
+
+- (void)createTabbarViewController{
+    UITabBarController *tabBarcontroller = [[UITabBarController alloc] init];
+    [self createviewControllers:tabBarcontroller];
+    self.window.rootViewController = tabBarcontroller;
+}
+- (void)createviewControllers:(UITabBarController *)tabBarController{
+    NSMutableArray *controllers = [NSMutableArray new];
+    NSArray *contrllerNames = @[@"ShouYeViewController",@"HotViewController",@"MuHouViewController",@"MineViewController"];
+    NSArray *titles = @[@"首页",@"热榜",@"花絮",@"我的"];
+    NSArray *imageNames = @[@"tab_icon_home",@"tab_icon_hot",@"tab_icon_vplus",@"tab_icon_profile"];
+    for (int i = 0; i < contrllerNames.count; i++) {
+        Class class = NSClassFromString(contrllerNames[i]);
+        
+        BaseViewController *viewController = [[class alloc] init];
+        NSString *normeName = imageNames[i];
+        NSString *selectName = [imageNames[i] stringByAppendingString:@"_sel"];
+        UIImage *norImg = [[UIImage imageNamed:normeName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        UIImage *selImg = [[UIImage imageNamed:selectName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:titles[i] image:norImg selectedImage:selImg];
+        viewController.tabBarItem = item;
+        [controllers addObject:nvc];
+    }
+    tabBarController.viewControllers = controllers;
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
